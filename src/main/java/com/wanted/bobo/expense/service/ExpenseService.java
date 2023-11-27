@@ -2,10 +2,10 @@ package com.wanted.bobo.expense.service;
 
 import com.wanted.bobo.expense.domain.Expense;
 import com.wanted.bobo.expense.domain.ExpenseRepository;
-import com.wanted.bobo.expense.dto.ExpenseFilter;
-import com.wanted.bobo.expense.dto.ExpenseListResponse;
-import com.wanted.bobo.expense.dto.ExpenseRequest;
-import com.wanted.bobo.expense.dto.ExpenseResponse;
+import com.wanted.bobo.expense.dto.request.ExpenseFilter;
+import com.wanted.bobo.expense.dto.response.ExpenseListResponse;
+import com.wanted.bobo.expense.dto.request.ExpenseRequest;
+import com.wanted.bobo.expense.dto.response.ExpenseResponse;
 import com.wanted.bobo.expense.exception.InvalidAmountRangeException;
 import com.wanted.bobo.expense.exception.NotFoundExpenseException;
 import lombok.RequiredArgsConstructor;

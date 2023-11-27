@@ -1,4 +1,4 @@
-package com.wanted.bobo.expense.dto;
+package com.wanted.bobo.expense.dto.helper;
 
 import java.util.Collections;
 import java.util.HashMap;

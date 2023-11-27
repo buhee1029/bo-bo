@@ -1,4 +1,4 @@
-package com.wanted.bobo.expense.dto;
+package com.wanted.bobo.expense.dto.response;
 
 import com.wanted.bobo.category.Category;
 import com.wanted.bobo.expense.domain.Expense;

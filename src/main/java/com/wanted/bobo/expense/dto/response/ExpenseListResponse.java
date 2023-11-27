@@ -1,8 +1,9 @@
-package com.wanted.bobo.expense.dto;
+package com.wanted.bobo.expense.dto.response;
 
 import com.wanted.bobo.category.Category;
 import java.util.List;
 import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
