@@ -16,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
@@ -42,14 +46,13 @@ public class ExpenseService {
 
     @Transactional
     public ExpenseResponse registerExpense(Long userId, ExpenseRequest request) {
-        validateExpenseCategoryExists(userId, Category.of(request.getCategory()));
-
+        validateExpenseCategoryExists(userId, request);
         return ExpenseResponse.from(expenseRepository.save(request.toEntity(userId)));
     }
 
     @Transactional
     public ExpenseResponse modifyExpense(Long userId, Long expenseId, ExpenseRequest request) {
-        validateExpenseCategoryExists(userId, Category.of(request.getCategory()));
+        validateExpenseCategoryExists(userId, request);
 
         Expense expense = findExpense(expenseId);
         expense.verifyMatchUser(userId);
@@ -76,9 +79,12 @@ public class ExpenseService {
         return expenseRepository.findById(id).orElseThrow(NotFoundExpenseException::new);
     }
 
-    public void validateExpenseCategoryExists(Long userId, Category category) {
-        boolean isExpenseCategoryExists = budgetRepository.existsByUserIdAndCategory(userId, category);
-        if(!isExpenseCategoryExists) {
+    public void validateExpenseCategoryExists(Long userId, ExpenseRequest request) {
+        YearMonth yearMonth = YearMonth.from(LocalDate.parse(request.getDate(), DateTimeFormatter.ISO_LOCAL_DATE));
+        boolean isExpenseCategoryExists = budgetRepository.existsByUserIdAndCategoryAndYearmonth(
+                userId, Category.of(request.getCategory()), yearMonth);
+
+        if (!isExpenseCategoryExists) {
             throw new UnsupportedExpenseCategoryException();
         }
     }

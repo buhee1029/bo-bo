@@ -30,5 +30,4 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
           "GROUP BY category", nativeQuery = true)
     List<BudgetStatByCategory> findAverageBudgetPercentagesByCategory(@Param("yearmonth") String yearmonth);
 
-    boolean existsByUserIdAndCategory(Long userId, Category category);
 }
