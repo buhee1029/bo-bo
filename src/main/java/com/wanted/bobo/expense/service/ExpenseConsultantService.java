@@ -5,8 +5,8 @@ import com.wanted.bobo.budget.domain.BudgetRepository;
 import com.wanted.bobo.category.Category;
 import com.wanted.bobo.expense.domain.Expense;
 import com.wanted.bobo.expense.domain.ExpenseRepository;
-import com.wanted.bobo.expense.dto.TodayExpenseRecMessage;
-import com.wanted.bobo.expense.dto.TodayExpenseReportMessage;
+import com.wanted.bobo.expense.dto.response.TodayExpenseRecMessage;
+import com.wanted.bobo.expense.dto.response.TodayExpenseReportMessage;
 import com.wanted.bobo.user.domain.User;
 import com.wanted.bobo.user.domain.UserRepository;
 import java.time.LocalDate;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -25,6 +24,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @RequiredArgsConstructor
 public class ExpenseConsultantService {
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final BudgetRepository budgetRepository;
     private final ExpenseRepository expenseRepository;
@@ -61,12 +62,8 @@ public class ExpenseConsultantService {
     }
 
     private TodayExpenseRecMessage generateExpenseRecommendations(Long userId) {
-        LocalDate today = LocalDate.now();
-        String startOfMonth = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String endDate = today.minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        List<Expense> expenses = expenseRepository.findByUserIdAndDateRange(userId, startOfMonth, endDate);
-        List<Budget> budgets = budgetRepository.findByUserIdAndYearmonth(userId, YearMonth.now());
+        List<Expense> expenses = getExpensesForDateRange(userId);
+        List<Budget> budgets = getBudgetsForUserAndYearMonth(userId);
 
         int totalBudget = budgets.stream().mapToInt(Budget::getAmount).sum();
         int totalExpense = expenses.stream().mapToInt(Expense::getAmount).sum();
@@ -78,16 +75,12 @@ public class ExpenseConsultantService {
     }
 
     private TodayExpenseReportMessage generateExpenseReport(Long userId) {
-        LocalDate today = LocalDate.now();
-        String startOfMonth = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String endDate = today.minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        List<Expense> expenses = expenseRepository.findByUserIdAndDateRange(userId, startOfMonth, endDate);
-        List<Budget> budgets = budgetRepository.findByUserIdAndYearmonth(userId, YearMonth.now());
+        List<Expense> expenses = getExpensesForDateRange(userId);
+        List<Budget> budgets = getBudgetsForUserAndYearMonth(userId);
 
         List<Expense> todayExpenses = expenseRepository.findByUserIdAndDate(
                 userId,
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                getFormattedDate(LocalDate.now()));
 
         Map<Category, Integer> todayCategoryExpenses =
                 todayExpenses.stream()
@@ -101,6 +94,22 @@ public class ExpenseConsultantService {
                                              calculateTodayRecommendedBudgets(expenses, budgets));
     }
 
+    private List<Expense> getExpensesForDateRange(Long userId) {
+        LocalDate today = LocalDate.now();
+        String startOfMonth = getFormattedDate(today.withDayOfMonth(1));
+        String endDate = getFormattedDate(today.minusDays(1));
+
+        return expenseRepository.findByUserIdAndDateRange(userId, startOfMonth, endDate);
+    }
+
+    private List<Budget> getBudgetsForUserAndYearMonth(Long userId) {
+        return budgetRepository.findByUserIdAndYearmonth(userId, YearMonth.now());
+    }
+
+    private String getFormattedDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+    }
+
     private Map<Category, Integer> calculateTodayRecommendedBudgets(List<Expense> expenses, List<Budget> budgets) {
         Map<Category, Integer> todayRecommendedCategoryBudgets
                 = budgets.stream()
@@ -108,16 +117,11 @@ public class ExpenseConsultantService {
                                  Budget::getCategory,
                                  Collectors.summingInt(Budget::getAmount)));
 
-        for (Expense expense : expenses) {
-            int amount = expense.getAmount();
-
-            if (todayRecommendedCategoryBudgets.containsKey(expense.getCategory())) {
-                todayRecommendedCategoryBudgets.replace(
-                        expense.getCategory(),
-                        todayRecommendedCategoryBudgets.get(expense.getCategory()) - amount
-                );
-            }
-        }
+        expenses.forEach(expense -> todayRecommendedCategoryBudgets.merge(
+                expense.getCategory(),
+                -expense.getAmount(),
+                Integer::sum
+        ));
 
         int daysRemainingInMonth = YearMonth.now().lengthOfMonth() - LocalDate.now().getDayOfMonth() + 1;
 

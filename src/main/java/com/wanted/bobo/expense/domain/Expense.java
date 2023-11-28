@@ -1,7 +1,7 @@
 package com.wanted.bobo.expense.domain;
 
 import com.wanted.bobo.category.Category;
-import com.wanted.bobo.expense.dto.ExpenseRequest;
+import com.wanted.bobo.expense.dto.request.ExpenseRequest;
 import com.wanted.bobo.expense.exception.NotMatchExpenseUserException;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

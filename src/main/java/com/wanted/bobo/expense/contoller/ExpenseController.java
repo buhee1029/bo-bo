@@ -1,10 +1,10 @@
 package com.wanted.bobo.expense.contoller;
 
 import com.wanted.bobo.common.response.ApiResponse;
-import com.wanted.bobo.expense.dto.ExpenseFilter;
-import com.wanted.bobo.expense.dto.ExpenseListResponse;
-import com.wanted.bobo.expense.dto.ExpenseRequest;
-import com.wanted.bobo.expense.dto.ExpenseResponse;
+import com.wanted.bobo.expense.dto.request.ExpenseFilter;
+import com.wanted.bobo.expense.dto.response.ExpenseListResponse;
+import com.wanted.bobo.expense.dto.request.ExpenseRequest;
+import com.wanted.bobo.expense.dto.response.ExpenseResponse;
 import com.wanted.bobo.expense.service.ExpenseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
