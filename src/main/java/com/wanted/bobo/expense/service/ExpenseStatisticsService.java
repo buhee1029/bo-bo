@@ -32,28 +32,40 @@ public class ExpenseStatisticsService {
     }
 
     private Integer calculateLastWeekStatistics(Long userId) {
-        return 0;
+        LocalDate today = LocalDate.now();
+        String lastWeekStart = today.minusWeeks(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String lastWeekEnd = today.minusWeeks(1).plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String currentWeekStart = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String currentWeekEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return calculateConsumptionRate(userId, lastWeekStart, lastWeekEnd, currentWeekStart, currentWeekEnd);
     }
 
     private Integer calculateLastMonthStatistics(Long userId) {
-        LocalDate today = LocalDate.now().plusDays(1);
+        LocalDate today = LocalDate.now();
         String lastMonthStart = today.minusMonths(1)
                 .withDayOfMonth(1)
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String lastMonthEnd = today.minusMonths(1)
                 .withDayOfMonth(today.getDayOfMonth())
+                .plusDays(1)
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         String currentMonthStart = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String currentMonthEnd = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String currentMonthEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        List<Expense> lastMonthExpense = expenseRepository.findByUserIdAndDateRange(userId, lastMonthStart, lastMonthEnd);
-        List<Expense> currentMonthExpense = expenseRepository.findByUserIdAndDateRange(userId, currentMonthStart, currentMonthEnd);
+        return calculateConsumptionRate(userId, lastMonthStart, lastMonthEnd, currentMonthStart, currentMonthEnd);
+    }
 
-        double lastMonthTotalAmount = lastMonthExpense.stream().mapToDouble(Expense::getAmount).sum();
-        double currentMonthTotalAmount = currentMonthExpense.stream().mapToDouble(Expense::getAmount).sum();
+    private Integer calculateConsumptionRate(
+            Long userId, String lastWeekStart, String lastWeekEnd, String currentWeekStart, String currentWeekEnd) {
+        List<Expense> lastExpenses = expenseRepository.findByUserIdAndDateRange(userId, lastWeekStart, lastWeekEnd);
+        List<Expense> currentExpenses = expenseRepository.findByUserIdAndDateRange(userId, currentWeekStart, currentWeekEnd);
 
-        return (int) (currentMonthTotalAmount / lastMonthTotalAmount * 100);
+        double lastTotalAmount = lastExpenses.stream().mapToDouble(Expense::getAmount).sum();
+        double currentTotalAmount = currentExpenses.stream().mapToDouble(Expense::getAmount).sum();
+
+        return (int) (currentTotalAmount / lastTotalAmount * 100);
     }
 
 }
