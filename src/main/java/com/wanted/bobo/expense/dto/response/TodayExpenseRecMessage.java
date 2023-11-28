@@ -63,12 +63,12 @@ public class TodayExpenseRecMessage {
     public String generateComment() {
         if (remainingBudget > totalBudget * 0.8) {
             return "💛ㅤ아주 좋아요! 계속 이렇게 예산을 효율적으로 활용해보세요!ㅤ💛\n\n";
-        } else if (remainingBudget > totalBudget * 0.6) {
+        } else if (remainingBudget > totalBudget * 0.5) {
             return "👏ㅤ예산을 잘 관리하고 계시네요! 더 발전하는 거에요!ㅤ👏\n\n";
-        } else if (remainingBudget > totalBudget * 0.4) {
+        } else if (remainingBudget > totalBudget * 0.1) {
             return "⚠️ㅤ지출이 높아지고 있어요. 조금 더 절약할 수 있는 부분을 찾아보세요!ㅤ⚠️\n\n";
         } else {
-            return "🚨ㅤ예산 초과! 다음 번에는 조금 더 신중하게 지출해보세요. 🚨\n\n";
+            return "🚨ㅤ예산 초과 ! 다음 번에는 조금 더 신중하게 지출해보세요. 🚨\n\n";
         }
     }
 
