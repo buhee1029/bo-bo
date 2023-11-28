@@ -9,6 +9,7 @@ import com.wanted.bobo.common.jwt.exception.MissingRequestHeaderAuthorizationExc
 import com.wanted.bobo.expense.exception.InvalidAmountRangeException;
 import com.wanted.bobo.expense.exception.NotFoundExpenseException;
 import com.wanted.bobo.expense.exception.NotMatchExpenseUserException;
+import com.wanted.bobo.expense.exception.UnsupportedExpenseCategoryException;
 import com.wanted.bobo.user.exception.DuplicateUsernameException;
 import com.wanted.bobo.user.exception.MismatchedPasswordException;
 import com.wanted.bobo.user.exception.NotFoundUsernameException;
@@ -36,7 +37,8 @@ public enum ErrorType {
 
     E001("E001", "존재하지 않는 지출 정보 입니다.", NotFoundExpenseException.class, HttpStatus.NOT_FOUND),
     E002("E002", "해당 지출 정보에 접근 권한이 없습니다.", NotMatchExpenseUserException.class, HttpStatus.FORBIDDEN),
-    E003("E003", "최소금액이 최대금액보다 큽니다.", InvalidAmountRangeException.class, HttpStatus.BAD_REQUEST);
+    E003("E003", "최소금액이 최대금액보다 큽니다.", InvalidAmountRangeException.class, HttpStatus.BAD_REQUEST),
+    E004("E004", "등록되지 않은 예산 카테고리로는 지출을 저장할 수 없습니다.", UnsupportedExpenseCategoryException.class, HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

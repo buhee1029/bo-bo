@@ -56,41 +56,12 @@
 <br/>
 
 ## API 명세
-#### 사용자
+<img src = "images/erd.png"/>
 
-| Action | Verbs  | URL Pattern |
-|:------:|--------|:-----------:|
-|  회원가입  | POST   |    /join    |
-|  로그인   | POST   |   /login    |
+<br/>
 
-#### 카테고리
-|   Action   | Verbs | URL Pattern |
-|:----------:|:-----:|:-----------:|
-| 카테고리 목록 조회 |  GET  | /categories |
-
-
-#### 예산 관리
-|  Action   | Verbs  | URL Pattern   |
-|:---------:|:------:|---------------|
-|   예산 설정   |  POST  | /budgets      |
-|   예산 수정   |  PUT   | /budgets/{id} |
-|   예산 삭제   | DELETE | /budgets/{id} |
-|   예산 조회   |  GET   | /budgets      |
-| 예산 설계(추천) |  GET   | /budgets/rec  |
-
-#### 지출 관리
-|  Action  | Verbs  | URL Pattern    |
-|:--------:|:------:|----------------|
-|  지출 등록   |  POST  | /expenses      |
-|  지출 수정   |  PUT   | /expenses/{id} |
-| 지출 합계 제외 | PATCH  | /expenses/{id} |
-|  지출 삭제   | DELETE | /expenses/{id} |
-| 지출 상세 조회 |  GET   | /expenses/{id} |
-| 지출 목록 조회 |  GET   | /expenses      |
-
-
-### 🔔 오늘 지출 추천 & 안내 디스코드 알림
-(사진 첨부 예정)
+### 🔔 오늘의 지출 추천 & 안내
+> 디스코드 웹훅 url 등록한 사용자들에게 알림 전송
 
 <br/>
 
