@@ -2,6 +2,7 @@ package com.wanted.bobo.expense.service;
 
 import com.wanted.bobo.expense.domain.Expense;
 import com.wanted.bobo.expense.domain.ExpenseRepository;
+import com.wanted.bobo.expense.dto.ExpenseRateToTotalBudget;
 import com.wanted.bobo.expense.dto.response.ExpenseStatisticsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ExpenseStatisticsService {
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+
     private final ExpenseRepository expenseRepository;
 
     public ExpenseStatisticsResponse getExpenseStatistics(Long userId) {
@@ -28,15 +31,21 @@ public class ExpenseStatisticsService {
     }
 
     private Integer calculateOtherUsersStatistics(Long userId) {
-        return 0;
+        String yearmonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        List<ExpenseRateToTotalBudget> rates = expenseRepository.findExpenseRateToTotalBudget(yearmonth);
+
+        double myRate = getExpenseRateForUser(rates, userId);
+        double otherUserAverageRate = getOtherUsersAverageRate(rates, userId);
+
+        return (int) (myRate / otherUserAverageRate * 100);
     }
 
     private Integer calculateLastWeekStatistics(Long userId) {
         LocalDate today = LocalDate.now();
-        String lastWeekStart = today.minusWeeks(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String lastWeekEnd = today.minusWeeks(1).plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String currentWeekStart = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String currentWeekEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String lastWeekStart = today.minusWeeks(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String lastWeekEnd = today.minusWeeks(1).plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String currentWeekStart = today.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String currentWeekEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
         return calculateConsumptionRate(userId, lastWeekStart, lastWeekEnd, currentWeekStart, currentWeekEnd);
     }
@@ -45,14 +54,14 @@ public class ExpenseStatisticsService {
         LocalDate today = LocalDate.now();
         String lastMonthStart = today.minusMonths(1)
                 .withDayOfMonth(1)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                .format(DateTimeFormatter.ofPattern(DATE_FORMAT));
         String lastMonthEnd = today.minusMonths(1)
                 .withDayOfMonth(today.getDayOfMonth())
                 .plusDays(1)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                .format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
-        String currentMonthStart = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String currentMonthEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String currentMonthStart = today.withDayOfMonth(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String currentMonthEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
         return calculateConsumptionRate(userId, lastMonthStart, lastMonthEnd, currentMonthStart, currentMonthEnd);
     }
@@ -66,6 +75,20 @@ public class ExpenseStatisticsService {
         double currentTotalAmount = currentExpenses.stream().mapToDouble(Expense::getAmount).sum();
 
         return (int) (currentTotalAmount / lastTotalAmount * 100);
+    }
+
+    private double getExpenseRateForUser(List<ExpenseRateToTotalBudget> rates, Long userId) {
+        return rates.stream()
+                .filter(rate -> rate.getUserId().equals(userId))
+                .mapToDouble(ExpenseRateToTotalBudget::getRate)
+                .findFirst().orElse(0.0);
+    }
+
+    private double getOtherUsersAverageRate(List<ExpenseRateToTotalBudget> rates, Long userId) {
+        return rates.stream()
+                .filter(rate -> !rate.getUserId().equals(userId))
+                .mapToDouble(ExpenseRateToTotalBudget::getRate)
+                .average().orElse(0.0);
     }
 
 }
