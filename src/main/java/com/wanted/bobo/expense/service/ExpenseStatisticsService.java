@@ -37,7 +37,7 @@ public class ExpenseStatisticsService {
         double myRate = getExpenseRateForUser(rates, userId);
         double otherUserAverageRate = getOtherUsersAverageRate(rates, userId);
 
-        return (int) (myRate / otherUserAverageRate * 100);
+        return otherUserAverageRate == 0.0 ? 0 : (int) (myRate / otherUserAverageRate * 100);
     }
 
     private Integer calculateLastWeekStatistics(Long userId) {
@@ -74,7 +74,7 @@ public class ExpenseStatisticsService {
         double lastTotalAmount = lastExpenses.stream().mapToDouble(Expense::getAmount).sum();
         double currentTotalAmount = currentExpenses.stream().mapToDouble(Expense::getAmount).sum();
 
-        return (int) (currentTotalAmount / lastTotalAmount * 100);
+        return lastTotalAmount == 0.0 ? 0 : (int) (currentTotalAmount / lastTotalAmount * 100);
     }
 
     private double getExpenseRateForUser(List<ExpenseRateToTotalBudget> rates, Long userId) {
