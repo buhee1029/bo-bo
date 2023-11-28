@@ -30,26 +30,6 @@ public class ExpenseStatisticsService {
         return ExpenseStatisticsResponse.from(statistics);
     }
 
-    private Integer calculateOtherUsersStatistics(Long userId) {
-        String yearmonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        List<ExpenseRateToTotalBudget> rates = expenseRepository.findExpenseRateToTotalBudget(yearmonth);
-
-        double myRate = getExpenseRateForUser(rates, userId);
-        double otherUserAverageRate = getOtherUsersAverageRate(rates, userId);
-
-        return otherUserAverageRate == 0.0 ? 0 : (int) (myRate / otherUserAverageRate * 100);
-    }
-
-    private Integer calculateLastWeekStatistics(Long userId) {
-        LocalDate today = LocalDate.now();
-        String lastWeekStart = today.minusWeeks(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-        String lastWeekEnd = today.minusWeeks(1).plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-        String currentWeekStart = today.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-        String currentWeekEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-
-        return calculateConsumptionRate(userId, lastWeekStart, lastWeekEnd, currentWeekStart, currentWeekEnd);
-    }
-
     private Integer calculateLastMonthStatistics(Long userId) {
         LocalDate today = LocalDate.now();
         String lastMonthStart = today.minusMonths(1)
@@ -64,6 +44,26 @@ public class ExpenseStatisticsService {
         String currentMonthEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
         return calculateConsumptionRate(userId, lastMonthStart, lastMonthEnd, currentMonthStart, currentMonthEnd);
+    }
+
+    private Integer calculateLastWeekStatistics(Long userId) {
+        LocalDate today = LocalDate.now();
+        String lastWeekStart = today.minusWeeks(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String lastWeekEnd = today.minusWeeks(1).plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String currentWeekStart = today.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        String currentWeekEnd = today.plusDays(1).format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+
+        return calculateConsumptionRate(userId, lastWeekStart, lastWeekEnd, currentWeekStart, currentWeekEnd);
+    }
+
+    private Integer calculateOtherUsersStatistics(Long userId) {
+        String yearmonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        List<ExpenseRateToTotalBudget> rates = expenseRepository.findExpenseRateToTotalBudget(yearmonth);
+
+        double myRate = getExpenseRateForUser(rates, userId);
+        double otherUserAverageRate = getOtherUsersAverageRate(rates, userId);
+
+        return otherUserAverageRate == 0.0 ? 0 : (int) (myRate / otherUserAverageRate * 100);
     }
 
     private Integer calculateConsumptionRate(
