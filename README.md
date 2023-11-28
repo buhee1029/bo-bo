@@ -56,12 +56,14 @@
 <br/>
 
 ## API 명세
-<img src = "images/erd.png"/>
+<img src = "images/api.png"/>
 
 <br/>
 
 ### 🔔 오늘의 지출 추천 & 안내
 > 디스코드 웹훅 url 등록한 사용자들에게 알림 전송
+
+(추후 사진 추가)
 
 <br/>
 
