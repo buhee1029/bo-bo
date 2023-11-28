@@ -7,6 +7,7 @@ import com.wanted.bobo.budget.dto.BudgetResponse;
 import com.wanted.bobo.budget.service.BudgetService;
 import com.wanted.bobo.budget.service.BudgetStatService;
 import com.wanted.bobo.common.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -33,18 +34,21 @@ public class BudgetController {
     private final BudgetStatService budgetStatService;
 
     @GetMapping("/rec")
+    @Operation(summary = "예산 설정 도우미")
     public ApiResponse<BudgetRecommendationResponse> recommendBudget(
             @Valid @ParameterObject @ModelAttribute BudgetFilter filter) {
         return ApiResponse.ok(budgetStatService.recommendBudget(filter));
     }
 
     @GetMapping()
+    @Operation(summary = "예산 전체 조회")
     public ApiResponse<List<BudgetResponse>> getBudgets(
             @RequestAttribute Long userId) {
         return ApiResponse.ok(budgetService.getBudgets(userId));
     }
 
     @PostMapping
+    @Operation(summary = "예산 설정")
     public ApiResponse<BudgetResponse> setBudget(
             @RequestAttribute Long userId,
             @Valid @RequestBody BudgetRequest request) {
@@ -52,6 +56,7 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "예산 수정")
     public ApiResponse<BudgetResponse> modifyBudget(
             @RequestAttribute Long userId,
             @PathVariable("id") Long budgetId,
@@ -60,6 +65,7 @@ public class BudgetController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "예산 삭제")
     public ApiResponse<Void> reviseBudget(
             @RequestAttribute Long userId,
             @PathVariable("id") Long budgetId) {

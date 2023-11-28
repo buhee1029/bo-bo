@@ -4,6 +4,7 @@ import com.wanted.bobo.common.response.ApiResponse;
 import com.wanted.bobo.user.dto.JoinRequest;
 import com.wanted.bobo.user.dto.JoinResponse;
 import com.wanted.bobo.user.service.JoinService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ public class JoinController {
     }
 
     @PostMapping
+    @Operation(summary = "회원가입")
     public ApiResponse<JoinResponse> join(@Valid @RequestBody JoinRequest request) {
         return ApiResponse.created(joinService.join(request));
     }

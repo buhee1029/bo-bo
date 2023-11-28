@@ -6,6 +6,7 @@ import com.wanted.bobo.expense.dto.response.ExpenseListResponse;
 import com.wanted.bobo.expense.dto.request.ExpenseRequest;
 import com.wanted.bobo.expense.dto.response.ExpenseResponse;
 import com.wanted.bobo.expense.service.ExpenseService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @GetMapping
+    @Operation(summary = "지출 목록 조회")
     public ApiResponse<ExpenseListResponse> getExpenses(
             @RequestAttribute Long userId,
             @Valid @ParameterObject @ModelAttribute ExpenseFilter filter) {
@@ -38,6 +40,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "지출 상세 조회")
     public ApiResponse<ExpenseResponse> getExpense(
             @RequestAttribute Long userId,
             @PathVariable("id") Long expenseId) {
@@ -45,6 +48,7 @@ public class ExpenseController {
     }
 
     @PostMapping
+    @Operation(summary = "지출 등록")
     public ApiResponse<ExpenseResponse> registerExpense(
             @RequestAttribute Long userId,
             @Valid @RequestBody ExpenseRequest request) {
@@ -52,6 +56,7 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "지출 수정")
     public ApiResponse<ExpenseResponse> modifyBudget(
             @RequestAttribute Long userId,
             @PathVariable("id") Long expenseId,
@@ -60,6 +65,7 @@ public class ExpenseController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "지출 합계 처리")
     public ApiResponse<Void> excludeExpense(
             @RequestAttribute Long userId,
             @PathVariable("id") Long expenseId) {
@@ -68,6 +74,7 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "지출 삭제")
     public ApiResponse<Void> removeExpense(
             @RequestAttribute Long userId,
             @PathVariable("id") Long expenseId) {

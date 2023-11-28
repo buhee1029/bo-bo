@@ -4,6 +4,7 @@ import com.wanted.bobo.common.response.ApiResponse;
 import com.wanted.bobo.user.dto.LoginRequest;
 import com.wanted.bobo.user.dto.LoginResponse;
 import com.wanted.bobo.user.service.LoginService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ public class LoginController {
     }
 
     @PostMapping
+    @Operation(summary = "로그인")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.created(loginService.login(request));
     }
